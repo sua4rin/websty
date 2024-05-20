@@ -1,0 +1,12 @@
+*{
+     font-family: "Noto Sans KR", sans-serif;
+
+  }
+  
+.brand-text {
+   font-weight: bold;
+   text-align: center; /* 중앙 정렬 */
+   margin-top: 20px;
+   color: black; /* 원하는 색상으로 변경 */
+}
+

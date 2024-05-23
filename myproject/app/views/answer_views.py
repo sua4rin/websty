@@ -7,7 +7,7 @@ from .auth_views import login_required
 from .. import db
 from ..forms import AnswerForm
 from ..models import Question, Answer
-from flask_wtf.csrf import CSRFProtect
+
 
 
 bp = Blueprint('answer', __name__, url_prefix='/answer')

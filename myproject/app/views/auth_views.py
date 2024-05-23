@@ -7,9 +7,10 @@ from werkzeug.utils import redirect
 from .. import db
 from ..forms import UserCreateForm, UserLoginForm
 from ..models import User
+from argon2 import PasswordHasher
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
-
+ph = PasswordHasher()
 
 @bp.route('/signup/', methods=('GET', 'POST'))
 def signup():
@@ -17,8 +18,9 @@ def signup():
     if request.method == 'POST' and form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if not user:
+            hashed_password = ph.hash(form.password1.data)
             user = User(username=form.username.data,
-                        password=generate_password_hash(form.password1.data),
+                        password=hashed_password,
                         email=form.email.data)
             db.session.add(user)
             db.session.commit()
@@ -36,7 +38,7 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if not user:
             error = "존재하지 않는 사용자입니다."
-        elif not check_password_hash(user.password, form.password.data):
+        elif not ph.verify(user.password, form.password.data):
             error = "비밀번호가 올바르지 않습니다."
         if error is None:
             session.clear()

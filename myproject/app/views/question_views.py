@@ -1,4 +1,5 @@
 import os
+import imghdr
 from datetime import datetime
 from flask import Blueprint, render_template, request, url_for, g, flash, send_from_directory, abort
 from werkzeug.utils import redirect
@@ -17,8 +18,17 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 bp = Blueprint('question', __name__, url_prefix='/question')
 
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
+    if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+        ext = filename.rsplit('.', 1)[1].lower()
+        if ext in ['jpg', 'jpeg', 'png', 'gif']:
+            header = file.read(512)
+            file.seek(0)
+            file_type = imghdr.what(None, header)
+            if file_type:
+                return file_type in ALLOWED_EXTENSIONS
+        return True
+    return False
+    
 @bp.route('/list/')
 def _list():
     page = request.args.get('page', type=int, default=1)  # 페이지
